@@ -66,4 +66,4 @@ See [LICENSE](LICENSE).
 
 ---
 
-Part of the MERN e-commerce use case for QuickOps, 2025, by Tamim Hmizi — https://tamim-hmizi.github.io/Portfolio/
+Part of the MERN e-commerce use case for QuickOps, 2025, by Tamim Hmizi: https://tamim-hmizi.github.io/Portfolio/
