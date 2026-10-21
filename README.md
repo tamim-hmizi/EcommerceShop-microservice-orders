@@ -8,14 +8,15 @@ This service is one of seven Express/MongoDB microservices (auth, users, product
 
 | Method | Path | Description |
 |---|---|---|
-| POST | `/api/orders` | Create an order for `req.user` |
-| GET | `/api/orders` | List orders |
+| POST | `/api/orders` | Create an order for the authenticated user |
+| GET | `/api/orders` | List the authenticated user's orders |
+| GET | `/api/orders/all` | List every order (admins only) |
 | GET | `/api/orders/:id` | Get an order by id (user populated) |
 | PUT | `/api/orders/:id` | Update the order status |
 | DELETE | `/api/orders/:id` | Delete an order |
 | GET | `/api/orders/metrics` | Prometheus metrics |
 
-> Order creation expects `req.user` to be resolved upstream; this service has no JWT verification middleware.
+> Every route requires an `Authorization: Bearer <token>` header with a token issued by the auth service. `GET /api/orders` returns the caller's orders; `GET /api/orders/all` returns every order and is limited to admins.
 
 Data model: `Order` (user, orderItems, shippingAddress, totalPrice, isPaid, paidAt, status).
 
@@ -34,6 +35,7 @@ Copy `.env.example` to `.env` and set your own values. Never commit `.env`.
 |---|---|
 | `PORT` | HTTP port (defaults to 5000) |
 | `MONGO_URI` | MongoDB connection string |
+| `JWT_SECRET` | Secret shared with the auth service to verify tokens |
 
 ## Run locally
 
@@ -44,6 +46,17 @@ npm start
 ```
 
 The service listens on `http://localhost:5000` by default.
+
+## Tests
+
+Integration tests use Node's built-in test runner and Supertest against a real MongoDB:
+
+```bash
+docker run -d --name mongo -p 27017:27017 mongo:9.0
+MONGO_URI=mongodb://127.0.0.1:27017 npm test
+```
+
+CI runs the same suite with a MongoDB service container on every push and pull request.
 
 ## Docker
 
