@@ -6,7 +6,6 @@ import app from '../src/app.js';
 import User from '../src/models/User.js';
 import { bearer, useDatabase } from './helpers.js';
 
-useDatabase();
 
 const base = '/api/orders';
 const order = () => ({
@@ -16,6 +15,8 @@ const order = () => ({
 });
 
 describe('orders service', () => {
+  useDatabase();
+
   it('requires a token', async () => {
     await request(app).get(base).expect(401);
   });
