@@ -1,4 +1,7 @@
 import Order from '../models/Order.js';
+import User from '../models/User.js';
+
+const USER_FIELDS = 'name email';
 
 const createOrder = async (req, res) => {
   try {
@@ -16,9 +19,24 @@ const createOrder = async (req, res) => {
   }
 };
 
+// Orders of the logged-in user.
 const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate('user');
+    const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Every order, for admins.
+const getAllOrders = async (req, res) => {
+  try {
+    const requester = await User.findById(req.user.id).select('isAdmin');
+    if (!requester?.isAdmin) {
+      return res.status(403).json({ message: 'Not authorized as admin' });
+    }
+    const orders = await Order.find({}).populate('user', USER_FIELDS).sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -27,7 +45,7 @@ const getOrders = async (req, res) => {
 
 const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('user');
+    const order = await Order.findById(req.params.id).populate('user', USER_FIELDS);
     if (order) {
       res.json(order);
     } else {
@@ -71,6 +89,7 @@ const deleteOrder = async (req, res) => {
 export {
   createOrder,
   getOrders,
+  getAllOrders,
   getOrderById,
   updateOrderStatus,
   deleteOrder,
