@@ -13,7 +13,7 @@ export const bearer = (id) => ({ Authorization: `Bearer ${tokenFor(id)}` });
 export function useDatabase() {
   before(async () => {
     const uri = process.env.MONGO_URI ?? 'mongodb://127.0.0.1:27017';
-    await mongoose.connect(uri, { dbName: `test-orders-${process.pid}` });
+    await mongoose.connect(uri, { dbName: `test-orders-${process.pid}`, serverSelectionTimeoutMS: 60000 });
   });
   beforeEach(async () => {
     await Promise.all(
