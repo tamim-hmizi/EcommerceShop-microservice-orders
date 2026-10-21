@@ -52,7 +52,7 @@ The service listens on `http://localhost:5000` by default.
 Integration tests use Node's built-in test runner and Supertest against a real MongoDB:
 
 ```bash
-docker run -d --name mongo -p 27017:27017 mongo:8
+docker run -d --name mongo -p 27017:27017 mongo:9.0
 MONGO_URI=mongodb://127.0.0.1:27017 npm test
 ```
 
