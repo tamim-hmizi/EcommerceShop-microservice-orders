@@ -1,4 +1,5 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import orderRoutes from './routes/orderRoutes.js';
 import { client, httpRequestDurationMicroseconds } from './utils/metrics.js';
 
@@ -27,7 +28,17 @@ app.get('/api/orders/metrics', async (req, res) => {
   res.end(await client.register.metrics());
 });
 
+// Behind the ingress, use the client IP from X-Forwarded-For.
+app.set('trust proxy', 1);
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 300,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+});
+
 // API routes
-app.use('/api/orders', orderRoutes);
+app.use('/api/orders', apiLimiter, orderRoutes);
 
 export default app;
