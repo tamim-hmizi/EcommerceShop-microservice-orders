@@ -18,3 +18,7 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # Stay on the current LTS line; major Node upgrades are done by hand.
+      - dependency-name: node
+        update-types: [version-update:semver-major]
